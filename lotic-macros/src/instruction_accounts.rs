@@ -56,6 +56,13 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                                     return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
+                        } else if account_type.is_ident("stake") {
+                            validations.push(quote! {
+                                let stake_program_address = Address::from_str_const("Stake11111111111111111111111111111111111111");
+                                if self.#field_ident.address()!= &stake_program_address {
+                                    return Err(ProgramError::IncorrectProgramId);
+                                }
+                            });
                         }
                     }
                     Ok(())

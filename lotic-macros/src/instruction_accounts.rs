@@ -63,6 +63,13 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                                     return Err(ProgramError::IncorrectProgramId);
                                 }
                             });
+                        } else if account_type.is_ident("config") {
+                            validations.push(quote! {
+                                let config_program_address = Address::from_str_const("Config1111111111111111111111111111111111111");
+                                if self.#field_ident.address()!= &config_program_address {
+                                    return Err(ProgramError::IncorrectProgramId);
+                                }
+                            });
                         }
                     }
                     Ok(())

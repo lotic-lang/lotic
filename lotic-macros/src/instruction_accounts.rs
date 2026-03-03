@@ -1,6 +1,6 @@
 use {
     proc_macro::TokenStream,
-    quote::quote,
+    quote::{quote, ToTokens},
     syn::{parse_macro_input, Data, DeriveInput, Fields},
 };
 
@@ -58,24 +58,32 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                             });
                         } else if account_type.is_ident("stake") {
                             validations.push(quote! {
-                                let stake_program_address = Address::from_str_const("Stake11111111111111111111111111111111111111");
+                                let stake_program_address = ::pinocchio::Address::from_str_const("Stake11111111111111111111111111111111111111");
                                 if self.#field_ident.address()!= &stake_program_address {
-                                    return Err(ProgramError::IncorrectProgramId);
+                                    return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
                         } else if account_type.is_ident("config") {
                             validations.push(quote! {
-                                let config_program_address = Address::from_str_const("Config1111111111111111111111111111111111111");
+                                let config_program_address = ::pinocchio::Address::from_str_const("Config1111111111111111111111111111111111111");
                                 if self.#field_ident.address()!= &config_program_address {
-                                    return Err(ProgramError::IncorrectProgramId);
+                                    return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
                         }
                         else if account_type.is_ident("compute_budget") {
                             validations.push(quote! {
-                                let compute_budget_program_address = Address::from_str_const("ComputeBudget111111111111111111111111111111");
+                                let compute_budget_program_address = ::pinocchio::Address::from_str_const("ComputeBudget111111111111111111111111111111");
                                 if self.#field_ident.address()!= &compute_budget_program_address {
-                                    return Err(ProgramError::IncorrectProgramId);
+                                    return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
+                                }
+                            });
+                        } else if account_type.get_ident().to_token_stream().to_string().to_lowercase() == "token" {
+                            validations.push(quote! {
+                                let tokenkeg = ::pinocchio::Address::from_str_const("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+                                let tokenz = ::pinocchio::Address::from_str_const("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
+                                if self.#field_ident.address()!= &tokenkeg && self.#field_ident.address()!= &tokenz{
+                                    return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
                         }

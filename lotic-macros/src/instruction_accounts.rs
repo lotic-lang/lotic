@@ -70,8 +70,7 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                                     return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
-                        }
-                        else if account_type.is_ident("compute_budget") {
+                        } else if account_type.is_ident("compute_budget") {
                             validations.push(quote! {
                                 let compute_budget_program_address = ::pinocchio::Address::from_str_const("ComputeBudget111111111111111111111111111111");
                                 if self.#field_ident.address()!= &compute_budget_program_address {

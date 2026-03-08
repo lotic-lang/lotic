@@ -29,13 +29,13 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                     if meta.path.is_ident("signer") {
                         validations.push(quote! {
                             if !self.#field_ident.is_signer() {
-                                return Err(::pinocchio::error::ProgramError::MissingRequiredSignature);
+                                return Err(::lotic::pinocchio::error::ProgramError::MissingRequiredSignature);
                             }
                         });
                     } else if meta.path.is_ident("mut") {
                         validations.push(quote! {
                             if !self.#field_ident.is_writable() {
-                                return Err(::pinocchio::error::ProgramError::Immutable);
+                                return Err(::lotic::pinocchio::error::ProgramError::Immutable);
                             }
                         });
                     } else if meta.path.is_ident("program") {
@@ -44,59 +44,59 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
 
                         if account_type.is_ident("system") {
                             validations.push(quote! {
-                                let system_program_address = ::pinocchio::Address::from_str_const("11111111111111111111111111111111");
+                                let system_program_address = ::lotic::pinocchio::Address::from_str_const("11111111111111111111111111111111");
                                 if self.#field_ident.address()!= &system_program_address {
-                                    return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
+                                    return Err(::lotic::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
                         } else if account_type.is_ident("vote") {
                             validations.push(quote! {
-                                let vote_program_address = ::pinocchio::Address::from_str_const("Vote111111111111111111111111111111111111111");
+                                let vote_program_address = ::lotic::pinocchio::Address::from_str_const("Vote111111111111111111111111111111111111111");
                                 if self.#field_ident.address()!= &vote_program_address {
-                                    return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
+                                    return Err(::lotic::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
                         } else if account_type.is_ident("stake") {
                             validations.push(quote! {
-                                let stake_program_address = ::pinocchio::Address::from_str_const("Stake11111111111111111111111111111111111111");
+                                let stake_program_address = ::lotic::pinocchio::Address::from_str_const("Stake11111111111111111111111111111111111111");
                                 if self.#field_ident.address()!= &stake_program_address {
-                                    return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
+                                    return Err(::lotic::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
                         } else if account_type.is_ident("config") {
                             validations.push(quote! {
-                                let config_program_address = ::pinocchio::Address::from_str_const("Config1111111111111111111111111111111111111");
+                                let config_program_address = ::lotic::pinocchio::Address::from_str_const("Config1111111111111111111111111111111111111");
                                 if self.#field_ident.address()!= &config_program_address {
-                                    return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
+                                    return Err(::lotic::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
                         } else if account_type.is_ident("compute_budget") {
                             validations.push(quote! {
-                                let compute_budget_program_address = ::pinocchio::Address::from_str_const("ComputeBudget111111111111111111111111111111");
+                                let compute_budget_program_address = ::lotic::pinocchio::Address::from_str_const("ComputeBudget111111111111111111111111111111");
                                 if self.#field_ident.address()!= &compute_budget_program_address {
-                                    return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
+                                    return Err(::lotic::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
                         } else if account_type.get_ident().to_token_stream().to_string().to_lowercase() == "token" {
                             validations.push(quote! {
-                                let tokenkeg = ::pinocchio::Address::from_str_const("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
-                                let tokenz = ::pinocchio::Address::from_str_const("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
+                                let tokenkeg = ::lotic::pinocchio::Address::from_str_const("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+                                let tokenz = ::lotic::pinocchio::Address::from_str_const("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
                                 if self.#field_ident.address()!= &tokenkeg && self.#field_ident.address()!= &tokenz{
-                                    return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
+                                    return Err(::lotic::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
                         } else if account_type.get_ident().to_token_stream().to_string().to_lowercase() == "tokenkeg" {
                             validations.push(quote! {
-                                let tokenkeg = ::pinocchio::Address::from_str_const("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+                                let tokenkeg = ::lotic::pinocchio::Address::from_str_const("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
                                 if self.#field_ident.address()!= &tokenkeg{
-                                    return Err(ProgramError::IncorrectProgramId);
+                                    return Err(::lotic::pinocchio::ProgramError::IncorrectProgramId);
                                 }
                             });
                         } else if account_type.get_ident().to_token_stream().to_string().to_lowercase() == "tokenz" {
                             validations.push(quote! {
-                                let tokenz = ::pinocchio::Address::from_str_const("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
+                                let tokenz = ::lotic::pinocchio::Address::from_str_const("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
                                 if self.#field_ident.address()!= &tokenz{
-                                    return Err(ProgramError::IncorrectProgramId);
+                                    return Err(::lotic::pinnochio::ProgramError::IncorrectProgramId);
                                 }
                             });
                         }
@@ -108,25 +108,26 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
     }
 
     let expanded = quote! {
-        impl <'view> core::convert::TryFrom<&'view [AccountView]> for #struct_ident <'view>  {
-            type Error = ::pinocchio::error::ProgramError;
+        impl core::convert::TryFrom<&[::lotic::pinocchio::AccountView]> for #struct_ident  {
+            type Error = ::lotic::pinocchio::error::ProgramError;
 
-            fn try_from(accounts: &'view [AccountView]) -> Result<Self, Self::Error> {
+            fn try_from(accounts: &[::lotic::pinocchio::AccountView]) -> Result<Self, Self::Error> {
                 let [#(#field_idents,)* ..] = accounts else {
-                    return Err(::pinocchio::error::ProgramError::NotEnoughAccountKeys);
+                    return Err(::lotic::pinocchio::error::ProgramError::NotEnoughAccountKeys);
                 };
 
-                let accounts = Self {
-                    #(#field_idents,)*
-                };
+                let accounts = Self {#(
+                    #field_idents:  #field_idents.clone(),
+                )*
+            };
 
                 accounts.check_constraints()?;
                 Ok(accounts)
             }
         }
 
-        impl <'view> #struct_ident <'view> {
-            fn check_constraints(&self) -> Result<(), ::pinocchio::error::ProgramError> {
+        impl #struct_ident {
+            fn check_constraints(&self) -> Result<(), ::lotic::pinocchio::error::ProgramError> {
                 #(#validations)*
                 Ok(())
             }

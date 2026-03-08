@@ -77,38 +77,38 @@ pub fn declare_program(input: TokenStream) -> TokenStream {
 
         arms.push(quote! {
             #discriminator => {
-                let ctx = Context {
+                let ctx = ::lotic::Context {
                     program_id,
                     accounts: &mut #ctx_type::try_from(accounts)?,
                 };
-                #ix_handler(&ctx)
+                #ix_handler(ctx)
             }
         });
     }
 
     let expanded = quote! {
-        pub const __PROGRAM_ID__: ::pinocchio::Address =
-            pinocchio::Address::new_from_array([
+        pub const __PROGRAM_ID__: ::lotic::pinocchio::Address =
+            ::lotic::pinocchio::Address::new_from_array([
                 #( #program_id_bytes ),*
             ]);
         entrypoint!(__process_instruction__);
         #[inline(always)]
         pub fn __process_instruction__(
-            program_id: &pinocchio::Address,
-            accounts: &[AccountView],
+            program_id: &::lotic::pinocchio::Address,
+            accounts: &[::lotic::pinocchio::AccountView],
             instruction_data: &[u8],
         ) -> ProgramResult {
             if program_id != &__PROGRAM_ID__ {
-                return Err(pinocchio::error::ProgramError::IncorrectProgramId);
+                return Err(::lotic::pinocchio::error::ProgramError::IncorrectProgramId);
             }
 
             let (discriminator, _args) = instruction_data
                 .split_first()
-                .ok_or(pinocchio::error::ProgramError::InvalidInstructionData)?;
+                .ok_or(::lotic::pinocchio::error::ProgramError::InvalidInstructionData)?;
 
             match *discriminator {
                 #( #arms, )*
-                _ => Err(pinocchio::error::ProgramError::InvalidInstructionData),
+                _ => Err(::lotic::pinocchio::error::ProgramError::InvalidInstructionData),
             }
         }
     };

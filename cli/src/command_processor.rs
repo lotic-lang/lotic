@@ -3,6 +3,7 @@ use {
     camino::Utf8PathBuf,
     cargo_metadata::MetadataCommand,
     serde::Serialize,
+    std::process::Stdio,
     syn::{Attribute, GenericArgument, PathArguments, Type, TypePath},
     walkdir::WalkDir,
 };
@@ -13,7 +14,7 @@ struct InstructionFn {
     ix_args: Vec<String>,
 }
 
-pub fn run_build(manifest_path: Utf8PathBuf) -> Result<()> {
+pub fn run_build(manifest_path: Utf8PathBuf, cargo_args: Vec<String>) -> Result<()> {
     if !manifest_path.exists() {
         anyhow::bail!("Manifest file not found: {}", manifest_path);
     }
@@ -33,6 +34,18 @@ pub fn run_build(manifest_path: Utf8PathBuf) -> Result<()> {
     let output_path = target_dir.join("instructions.json");
 
     std::fs::write(&output_path, &json)?;
+    let exit = std::process::Command::new("cargo")
+        .args(&["build-sbf"])
+        .args(cargo_args.clone())
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .output()
+        .map_err(|e| anyhow::format_err!("{}", e))?;
+
+    if !exit.status.success() {
+        std::process::exit(exit.status.code().unwrap_or(1));
+    }
+
     Ok(())
 }
 

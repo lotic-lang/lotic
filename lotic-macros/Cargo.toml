@@ -9,7 +9,7 @@ proc-macro = true
 [dependencies]
 bs58 = "0.5.1"
 camino = { version = "1.2.2" }
-cargo_metadata = { version = "0.20.0" }
+cargo_metadata = { version = "0.23.1" }
 pinocchio = { workspace = true }
 quote = "1.0.44"
 serde = "1.0.228"

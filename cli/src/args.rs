@@ -16,5 +16,8 @@ pub enum Commands {
         // Path to the Cargo.toml file
         #[arg(long, default_value = "Cargo.toml")]
         manifest_path: Utf8PathBuf,
+        // Arguments for `cargo build-sbf`
+        #[clap(required = false, last = true)]
+        cargo_args: Vec<String>
     },
 }

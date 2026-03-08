@@ -7,8 +7,9 @@ edition = "2021"
 members = ["cli", "examples/basic-usage", "lotic-macros"]
 
 [workspace.dependencies]
-pinocchio = "0.10.1"
+pinocchio = "0.10.2"
 
 [dependencies]
 lotic-macros = { path = "lotic-macros" }
 pinocchio = { workspace = true }
+solana-address = { version = "2.2", features = ["decode"] }

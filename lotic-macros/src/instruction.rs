@@ -64,13 +64,6 @@ pub fn instruction(_attr: TokenStream, item: TokenStream) -> TokenStream {
                         .into();
                     }
                 }
-            } else {
-                return syn::Error::new_spanned(
-                    ty,
-                    format!("Argument {} must be a reference (use '&')", i + 1),
-                )
-                .to_compile_error()
-                .into();
             }
         }
     }

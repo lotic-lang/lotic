@@ -4,7 +4,7 @@ version = "0.0.1"
 edition = "2021"
 
 [workspace]
-members = ["cli", "examples/basic-usage", "lotic-macros"]
+members = ["cli", "examples/basic-usage", "lotic-macros", "tests/*"]
 
 [workspace.dependencies]
 pinocchio = "0.10.2"

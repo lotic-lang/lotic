@@ -14,29 +14,51 @@ struct InstructionFn {
     ix_args: Vec<String>,
 }
 
-pub fn run_build(manifest_path: Utf8PathBuf, cargo_args: Vec<String>) -> Result<()> {
+pub fn run_build(cargo_args: Vec<String>) -> Result<()> {
+    let mut manifest_path_raw = None;
+
+    for (i, arg) in cargo_args.iter().enumerate() {
+        if arg == "--manifest-path" {
+            if let Some(path) = cargo_args.get(i + 1) {
+                manifest_path_raw = Some(path.clone());
+            }
+            break;
+        } else if arg.starts_with("--manifest-path=") {
+            if let Some((_, path)) = arg.split_once('=') {
+                manifest_path_raw = Some(path.to_string());
+            }
+            break;
+        }
+    }
+
+    let manifest_path = match manifest_path_raw {
+        Some(p) => Utf8PathBuf::from(p),
+        None => std::env::current_dir()?.join("Cargo.toml").try_into()?,
+    };
+
     if !manifest_path.exists() {
         anyhow::bail!("Manifest file not found: {}", manifest_path);
     }
 
-    let absolute_manifest = manifest_path
+    let absolute_manifest_path = manifest_path
         .canonicalize_utf8()
         .context("Failed to canonicalize manifest path")?;
 
-    let rust_files = collect_workspace_rust_files(&absolute_manifest)?;
+    let rust_files = collect_workspace_rust_files(&absolute_manifest_path)?;
     let instructions = collect_instruction_functions(&rust_files)?;
     let json = serde_json::to_string_pretty(&instructions)?;
 
     let metadata = MetadataCommand::new()
-        .manifest_path(&absolute_manifest)
+        .manifest_path(&absolute_manifest_path)
         .exec()?;
+
     let target_dir = metadata.target_directory.clone();
     let output_path = target_dir.join("instructions.json");
-
     std::fs::write(&output_path, &json)?;
+
     let exit = std::process::Command::new("cargo")
-        .args(&["build-sbf"])
-        .args(cargo_args.clone())
+        .arg("build-sbf")
+        .args(&cargo_args)
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .output()
@@ -55,24 +77,32 @@ fn collect_workspace_rust_files(manifest_path: &Utf8PathBuf) -> Result<Vec<Utf8P
         .exec()
         .with_context(|| format!("Failed to parse metadata for {}", manifest_path))?;
 
-    let workspace_root = metadata.workspace_root.clone();
     let mut rust_files = Vec::new();
 
-    let entries = WalkDir::new(workspace_root.as_std_path())
-        .into_iter()
-        .filter_map(|e| e.ok())
-        .filter(|e| e.path().is_file())
-        // Skip target/ and tests/
-        .filter(|e| {
-            !e.path().components().any(|c| {
-                let name = c.as_os_str();
-                name == "target" || name == "tests"
-            })
-        })
-        .filter(|e| e.path().extension().map_or(false, |ext| ext == "rs"))
-        .filter_map(|e| Utf8PathBuf::from_path_buf(e.path().to_path_buf()).ok());
+    // Find the specific package that matches the manifest path
+    let package = metadata
+        .packages
+        .iter()
+        .find(|pkg| pkg.manifest_path == *manifest_path)
+        .context("Package not found in metadata")?;
 
-    rust_files.extend(entries);
+    let package_root = package
+        .manifest_path
+        .parent()
+        .context("Package manifest has no parent")?;
+
+    let src_dir = package_root.join("src");
+
+    if src_dir.exists() {
+        let entries = WalkDir::new(src_dir.as_std_path())
+            .into_iter()
+            .filter_map(|e| e.ok())
+            .filter(|e| e.path().is_file())
+            .filter(|e| e.path().extension().map_or(false, |ext| ext == "rs"))
+            .filter_map(|e| Utf8PathBuf::from_path_buf(e.path().to_path_buf()).ok());
+
+        rust_files.extend(entries);
+    }
 
     rust_files.sort();
     rust_files.dedup();

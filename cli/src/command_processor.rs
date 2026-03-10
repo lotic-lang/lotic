@@ -52,9 +52,12 @@ pub fn run_build(cargo_args: Vec<String>) -> Result<()> {
         .manifest_path(&absolute_manifest_path)
         .exec()?;
 
-    let target_dir = metadata.target_directory.clone();
-    let output_path = target_dir.join("instructions.json");
-    std::fs::write(&output_path, &json)?;
+    let package_name = package_name_from_manifest(&absolute_manifest_path)?;
+    let file_name = format!("{package_name}-instructions.json");
+    let output_path = metadata.target_directory.join(&file_name);
+
+    std::fs::write(&output_path, &json)
+        .map_err(|e| anyhow::anyhow!("Failed to write `{file_name}`: {e}"))?;
 
     let exit = std::process::Command::new("cargo")
         .arg("build-sbf")
@@ -175,4 +178,74 @@ fn extract_fn_args(func: &syn::ItemFn) -> Vec<String> {
             _ => None,
         })
         .collect()
+}
+
+fn package_name_from_manifest(path: &Utf8PathBuf) -> Result<String> {
+    let content = std::fs::read_to_string(path)
+        .with_context(|| format!("Failed to read manifest at: {path}"))?;
+
+    let manifest: toml::Value =
+        toml::from_str(&content).with_context(|| format!("Invalid TOML format in: {path}"))?;
+
+    manifest["package"]["name"]
+        .as_str()
+        .map(|s| s.to_string())
+        .with_context(|| format!("Could not find [package.name] in: {path}"))
+}
+
+use heck::{ToKebabCase, ToSnakeCase};
+use std::fs;
+use std::path::Path;
+
+pub fn run_init(project_name: String) -> Result<()> {
+    let folder_name = project_name.to_kebab_case();
+    let crate_name = project_name.to_snake_case();
+
+    let root_path = Path::new(&folder_name);
+    let src_path = root_path.join("src");
+
+    if root_path.exists() {
+        anyhow::bail!("Directory '{}' already exists", folder_name);
+    }
+
+    fs::create_dir_all(&src_path)
+        .with_context(|| format!("Failed to create directory structure at {src_path:?}"))?;
+
+    let cargo_toml = format!(
+        r#"[package]
+name = "{crate_name}"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+lotic = "0.0.1"
+"#
+    );
+
+    let lib_rs = r#"use lotic::{
+    declare_program, instruction,
+    pinocchio::ProgramResult,
+    Context, InstructionAccounts,
+};
+
+declare_program!("");
+
+#[instruction]
+fn initialize(_ctx: Context<Hello>) -> ProgramResult {
+    Ok(())
+}
+
+#[derive(InstructionAccounts)]
+pub struct Hello {}
+"#;
+
+    fs::write(root_path.join("Cargo.toml"), cargo_toml).context("Failed to write Cargo.toml")?;
+
+    fs::write(src_path.join("lib.rs"), lib_rs).context("Failed to write src/lib.rs")?;
+
+    println!("Successfully initialized '{folder_name}'");
+    Ok(())
 }

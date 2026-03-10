@@ -1,6 +1,7 @@
-use {
-    lotic::pinocchio::{entrypoint, AccountView, Address, ProgramResult},
-    lotic::{declare_program, instruction, Context, InstructionAccounts},
+use lotic::{
+    declare_program, instruction,
+    pinocchio::{AccountView, Address, ProgramResult},
+    Context, InstructionAccounts,
 };
 
 declare_program!("2JF8AjwkmCz6brkAkJf8NEEKhg89a8KrTuDZiZ5cVdS2");

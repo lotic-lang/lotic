@@ -1,6 +1,6 @@
 use lotic::{
     declare_program, instruction,
-    pinocchio::{entrypoint, AccountView, ProgramResult},
+    pinocchio::{AccountView, ProgramResult},
     Context, InstructionAccounts,
 };
 
@@ -16,4 +16,3 @@ pub struct Initialize {
     #[lotic(mut)]
     pub account: AccountView,
 }
-

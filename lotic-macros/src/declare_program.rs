@@ -1,11 +1,10 @@
 use {
-    camino::Utf8PathBuf,
     cargo_metadata::MetadataCommand,
     pinocchio::Address,
     proc_macro::TokenStream,
     quote::quote,
     serde::Deserialize,
-    std::{fs, path::Path},
+    std::fs,
     syn::{parse_macro_input, Ident, LitStr},
 };
 
@@ -15,19 +14,39 @@ pub struct InstructionFn {
     pub ix_args: Vec<String>,
 }
 
-pub fn read_instructions() -> String {
+fn read_instructions() -> String {
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set");
-    let manifest_path = Path::new(&manifest_dir).join("Cargo.toml");
+    let local_manifest_path = std::path::Path::new(&manifest_dir).join("Cargo.toml");
+
     let metadata = MetadataCommand::new()
-        .manifest_path(&manifest_path)
+        .manifest_path(&local_manifest_path)
+        .no_deps()
         .exec()
-        .expect("Failed to read cargo metadata");
+        .expect("Failed to fetch cargo metadata for the current crate");
 
-    let target_dir: Utf8PathBuf = metadata.target_directory;
-    let json_path = target_dir.join("instructions.json");
+    let package = metadata
+        .packages
+        .iter()
+        .find(|pkg| pkg.manifest_path == local_manifest_path)
+        .unwrap_or_else(|| {
+            panic!(
+                "Could not find package info for manifest at {:?}",
+                local_manifest_path
+            )
+        });
 
-    fs::read_to_string(&json_path)
-        .unwrap_or_else(|_| panic!("Failed to read instructions.json at {}", json_path))
+    let package_name = &package.name;
+
+    let json_path = metadata
+        .target_directory
+        .join(format!("{package_name}-instructions.json"));
+
+    fs::read_to_string(&json_path).unwrap_or_else(|_| {
+        panic!(
+            "Failed to read {}-instructions.json at {}",
+            package_name, json_path
+        )
+    })
 }
 
 pub fn declare_program(input: TokenStream) -> TokenStream {
@@ -91,7 +110,7 @@ pub fn declare_program(input: TokenStream) -> TokenStream {
             ::lotic::pinocchio::Address::new_from_array([
                 #( #program_id_bytes ),*
             ]);
-        entrypoint!(__process_instruction__);
+        ::lotic::pinocchio::entrypoint!(__process_instruction__);
         #[inline(always)]
         pub fn __process_instruction__(
             program_id: &::lotic::pinocchio::Address,

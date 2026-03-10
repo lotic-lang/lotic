@@ -11,9 +11,9 @@ bs58 = "0.5.1"
 camino = { version = "1.2.2" }
 cargo_metadata = { version = "0.23.1" }
 pinocchio = { workspace = true }
+proc-macro2 = { version = "1.0.106" }
 quote = "1.0.44"
 serde = "1.0.228"
 serde_json = { version = "1.0.149" }
-syn = { version = "2.0.114", features = ["full"] }
-proc-macro2 = { version = "1.0.106" }
 solana-program = "4.0.0"
+syn = { version = "2.0.114", features = ["full"] }

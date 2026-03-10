@@ -8,8 +8,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 lotic = { path = "../.." }
-# pinocchio-log = { version = "0.5.1" }
-# solana-address = { version = "2.2", features = ["decode"] }
 
 [lints.rust.unexpected_cfgs]
 level = "warn"

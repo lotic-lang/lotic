@@ -221,6 +221,10 @@ crate-type = ["cdylib", "lib"]
 
 [dependencies]
 lotic = "0.0.1"
+
+[lints.rust.unexpected_cfgs]
+level = "warn"
+check-cfg = ['cfg(target_os, values("solana"))']
 "#
     );
 

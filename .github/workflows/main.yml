@@ -17,6 +17,11 @@ jobs:
         uses: extractions/setup-just@v2
       - name: Build Lotic CLI
         run: just build-lotic-cli
+      - name: Upload Lotic CLI binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: lotic-cli
+          path: target/debug/lotic-cli
 
   check:
     name: Check
@@ -93,6 +98,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Get just
         uses: extractions/setup-just@v2
+      - name: Download Lotic CLI binary
+        uses: actions/download-artifact@v3
+        with:
+          name: lotic-cli
+          path: ./bin
       - name: Get Solana version
         id: solana
         run: echo "version=$(just solana-version)" >> $GITHUB_OUTPUT

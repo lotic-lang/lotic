@@ -14,7 +14,7 @@ pub struct InstructionFn {
     pub ix_args: Vec<String>,
 }
 
-fn read_instructions() -> String {
+fn read_instructions() -> Option<String> {
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set");
     let local_manifest_path = std::path::Path::new(&manifest_dir).join("Cargo.toml");
 
@@ -41,12 +41,7 @@ fn read_instructions() -> String {
         .target_directory
         .join(format!("{package_name}-instructions.json"));
 
-    fs::read_to_string(&json_path).unwrap_or_else(|_| {
-        panic!(
-            "Failed to read {}-instructions.json at {}",
-            package_name, json_path
-        )
-    })
+    fs::read_to_string(json_path).ok()
 }
 
 pub fn declare_program(input: TokenStream) -> TokenStream {
@@ -82,8 +77,13 @@ pub fn declare_program(input: TokenStream) -> TokenStream {
 
     let program_id_bytes = decoded.iter();
 
-    let instructions: Vec<InstructionFn> =
-        serde_json::from_str(&read_instructions()).expect("Invalid instructions.json");
+    let instructions: Option<Vec<InstructionFn>> =
+        read_instructions().and_then(|json| serde_json::from_str(&json).ok());
+
+    let instructions = match instructions {
+        Some(instr) => instr,
+        None => return TokenStream::new(),
+    };
 
     let mut arms = Vec::new();
 
@@ -133,5 +133,4 @@ pub fn declare_program(input: TokenStream) -> TokenStream {
     };
 
     expanded.into()
-    // TokenStream::new()
 }

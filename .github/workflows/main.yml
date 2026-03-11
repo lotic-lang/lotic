@@ -103,6 +103,8 @@ jobs:
         with:
           name: lotic-cli
           path: ./target/release
+      - name: Make Lotic CLI executable
+        run: chmod +x ./bin/release/lotic-cli
       - name: Get Solana version
         id: solana
         run: echo "version=$(just solana-version)" >> $GITHUB_OUTPUT

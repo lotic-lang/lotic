@@ -3,11 +3,11 @@ SOLANA_VERSION := "3.1.10"
 
 # Build Lotic CLI
 build-lotic-cli:
-    @cargo build --manifest-path ./cli/Cargo.toml
+    @cargo build --release --manifest-path ./cli/Cargo.toml
 
 # Build Solana test programs
 build-test-programs:
-    @./target/debug/lotic-cli build -- --manifest-path tests/constraint-writable/Cargo.toml
+    @./target/release/lotic-cli build -- --manifest-path tests/constraint-writable/Cargo.toml
 
 # Run clippy checks
 clippy:

@@ -21,7 +21,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lotic-cli
-          path: target/debug/lotic-cli
+          path: target/release/lotic-cli
 
   check:
     name: Check
@@ -102,7 +102,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: lotic-cli
-          path: ./bin
+          path: ./target/release
       - name: Get Solana version
         id: solana
         run: echo "version=$(just solana-version)" >> $GITHUB_OUTPUT

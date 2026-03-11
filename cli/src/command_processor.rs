@@ -57,6 +57,9 @@ pub fn run_build(cargo_args: Vec<String>) -> Result<()> {
     let file_name = format!("{package_name}-instructions.json");
     let output_path = metadata.target_directory.join(&file_name);
 
+    std::fs::create_dir_all(&metadata.target_directory)
+        .map_err(|e| anyhow::anyhow!("Failed to create target directory: {e}"))?;
+
     std::fs::write(&output_path, &json)
         .map_err(|e| anyhow::anyhow!("Failed to write `{file_name}`: {e}"))?;
 

@@ -7,7 +7,7 @@ edition = "2021"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-lotic = { path = "../../" }
+lotic = { path = "../../lib" }
 
 [dev-dependencies]
 mollusk-svm = { version = "0.10.1" }

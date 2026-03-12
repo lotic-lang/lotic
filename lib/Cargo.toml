@@ -1,0 +1,9 @@
+[package]
+name = "lotic"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+lotic-macros = { path = "lotic-macros" }
+pinocchio = { workspace = true }
+solana-address = { version = "2.2", features = ["decode"] }

@@ -105,7 +105,7 @@ fn collect_workspace_rust_files(manifest_path: &Utf8PathBuf) -> Result<Vec<Utf8P
             .into_iter()
             .filter_map(|e| e.ok())
             .filter(|e| e.path().is_file())
-            .filter(|e| e.path().extension().map_or(false, |ext| ext == "rs"))
+            .filter(|e| e.path().extension().is_some_and(|ext| ext == "rs"))
             .filter_map(|e| Utf8PathBuf::from_path_buf(e.path().to_path_buf()).ok());
 
         rust_files.extend(entries);
@@ -131,13 +131,13 @@ fn collect_instruction_functions(rust_files: &[Utf8PathBuf]) -> Result<Vec<Instr
             syn::parse_file(&source).with_context(|| format!("Failed to parse {}", file))?;
 
         for item in syntax.items {
-            if let syn::Item::Fn(func) = item {
-                if has_instruction_attr(&func.attrs) {
-                    instructions.push(InstructionFn {
-                        ix_name: func.sig.ident.to_string(),
-                        ix_args: extract_fn_args(&func),
-                    });
-                }
+            if let syn::Item::Fn(func) = item
+                && has_instruction_attr(&func.attrs)
+            {
+                instructions.push(InstructionFn {
+                    ix_name: func.sig.ident.to_string(),
+                    ix_args: extract_fn_args(&func),
+                });
             }
         }
     }
@@ -152,22 +152,21 @@ fn type_to_simple_string(ty: &Type) -> String {
         other => other,
     };
 
-    if let Type::Path(TypePath { path, .. }) = ty {
-        if let Some(seg) = path.segments.last() {
-            if let PathArguments::AngleBracketed(args) = &seg.arguments {
-                for arg in &args.args {
-                    if let GenericArgument::Type(Type::Path(TypePath {
-                        path: inner_path, ..
-                    })) = arg
-                    {
-                        if let Some(inner_seg) = inner_path.segments.last() {
-                            return inner_seg.ident.to_string();
-                        }
-                    }
+    if let Type::Path(TypePath { path, .. }) = ty
+        && let Some(seg) = path.segments.last()
+    {
+        if let PathArguments::AngleBracketed(args) = &seg.arguments {
+            for arg in &args.args {
+                if let GenericArgument::Type(Type::Path(TypePath {
+                    path: inner_path, ..
+                })) = arg
+                    && let Some(inner_seg) = inner_path.segments.last()
+                {
+                    return inner_seg.ident.to_string();
                 }
             }
-            return seg.ident.to_string();
         }
+        return seg.ident.to_string();
     }
 
     "_".to_string()

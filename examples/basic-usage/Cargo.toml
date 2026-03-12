@@ -7,7 +7,7 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-lotic = { path = "../.." }
+lotic = { path = "../../lib" }
 
 [lints.rust.unexpected_cfgs]
 level = "warn"

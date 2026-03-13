@@ -1,7 +1,7 @@
 [package]
 name = "test-constraint-writable"
 version = "0.0.0"
-edition = "2021"
+edition = { workspace = true }
 
 [lib]
 crate-type = ["cdylib", "lib"]

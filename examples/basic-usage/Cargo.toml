@@ -1,10 +1,10 @@
 [package]
 name = "basic-usage"
 version = "0.0.0"
-edition = "2021"
+edition = { workspace = true }
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "lib"]
 
 [dependencies]
 lotic = { path = "../../lib" }

@@ -8,6 +8,7 @@ build-lotic-cli:
 # Build Solana test programs
 build-test-programs:
     @./target/release/lotic-cli build -- --manifest-path tests/constraint-program-compute-budget/Cargo.toml
+    @./target/release/lotic-cli build -- --manifest-path tests/constraint-program-config/Cargo.toml
     @./target/release/lotic-cli build -- --manifest-path tests/constraint-program-token/Cargo.toml
     @./target/release/lotic-cli build -- --manifest-path tests/constraint-signer/Cargo.toml
     @./target/release/lotic-cli build -- --manifest-path tests/constraint-writable/Cargo.toml
@@ -48,6 +49,7 @@ solana-version:
 test:
     @just build-test-programs
     @cargo test --manifest-path tests/constraint-program-compute-budget/Cargo.toml --all-features
+    @cargo test --manifest-path tests/constraint-program-config/Cargo.toml --all-features
     @cargo test --manifest-path tests/constraint-program-token/Cargo.toml --all-features
     @cargo test --manifest-path tests/constraint-signer/Cargo.toml --all-features
     @cargo test --manifest-path tests/constraint-writable/Cargo.toml --all-features

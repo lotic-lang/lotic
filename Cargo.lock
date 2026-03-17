@@ -3666,6 +3666,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "test-constraint-program-tokenz"
+version = "0.0.0"
+dependencies = [
+ "lotic",
+ "mollusk-svm",
+ "solana-sdk",
+]
+
+[[package]]
 name = "test-constraint-signer"
 version = "0.0.0"
 dependencies = [

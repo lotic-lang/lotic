@@ -96,7 +96,7 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                             validations.push(quote! {
                                 let tokenz = ::lotic::pinocchio::Address::from_str_const("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
                                 if self.#field_ident.address()!= &tokenz{
-                                    return Err(::lotic::pinnochio::error::ProgramError::IncorrectProgramId);
+                                    return Err(::lotic::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
                         }

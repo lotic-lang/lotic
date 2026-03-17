@@ -8,7 +8,7 @@ use {
 };
 
 #[test]
-fn test_constraint_program_tokenkeg_success() {
+fn test_constraint_program_stake_success() {
     let program_id = Address::from_str_const("2JF8AjwkmCz6brkAkJf8NEEKhg89a8KrTuDZiZ5cVdS2");
     let mollusk = Mollusk::new(
         &program_id,
@@ -35,7 +35,7 @@ fn test_constraint_program_tokenkeg_success() {
 }
 
 #[test]
-fn test_constraint_program_tokenkeg_failure() {
+fn test_constraint_program_stake_failure() {
     let program_id = Address::from_str_const("2JF8AjwkmCz6brkAkJf8NEEKhg89a8KrTuDZiZ5cVdS2");
     let mollusk = Mollusk::new(
         &program_id,

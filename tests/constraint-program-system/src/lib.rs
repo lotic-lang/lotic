@@ -15,5 +15,5 @@ fn initialize(_ctx: Context<Initialize>) -> ProgramResult {
 pub struct Initialize {
     pub user: AccountView,
     #[lotic(program = system)]
-    pub stake_account: AccountView,
+    pub system_account: AccountView,
 }

@@ -89,14 +89,14 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                             validations.push(quote! {
                                 let tokenkeg = ::lotic::pinocchio::Address::from_str_const("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
                                 if self.#field_ident.address()!= &tokenkeg{
-                                    return Err(::lotic::pinocchio::ProgramError::IncorrectProgramId);
+                                    return Err(::lotic::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
                         } else if account_type.get_ident().to_token_stream().to_string().to_lowercase() == "tokenz" {
                             validations.push(quote! {
                                 let tokenz = ::lotic::pinocchio::Address::from_str_const("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
                                 if self.#field_ident.address()!= &tokenz{
-                                    return Err(::lotic::pinnochio::ProgramError::IncorrectProgramId);
+                                    return Err(::lotic::pinnochio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
                         }

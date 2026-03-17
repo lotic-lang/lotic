@@ -58,6 +58,7 @@ test:
     @cargo test --manifest-path tests/constraint-program-system/Cargo.toml --all-features
     @cargo test --manifest-path tests/constraint-program-token/Cargo.toml --all-features
     @cargo test --manifest-path tests/constraint-program-tokenkeg/Cargo.toml --all-features
+    @cargo test --manifest-path tests/constraint-program-tokenz/Cargo.toml --all-features
     @cargo test --manifest-path tests/constraint-signer/Cargo.toml --all-features
     @cargo test --manifest-path tests/constraint-writable/Cargo.toml --all-features
 

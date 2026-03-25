@@ -1366,7 +1366,7 @@ checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
 
 [[package]]
 name = "lotic"
-version = "0.0.1"
+version = "0.0.1-alpha"
 dependencies = [
  "lotic-macros",
  "pinocchio",
@@ -1375,7 +1375,7 @@ dependencies = [
 
 [[package]]
 name = "lotic-cli"
-version = "0.0.1"
+version = "0.0.1-alpha"
 dependencies = [
  "anyhow",
  "camino",
@@ -1393,7 +1393,7 @@ dependencies = [
 
 [[package]]
 name = "lotic-macros"
-version = "0.0.1"
+version = "0.0.1-alpha"
 dependencies = [
  "bs58",
  "camino",

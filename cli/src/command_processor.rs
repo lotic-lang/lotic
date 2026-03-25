@@ -502,7 +502,7 @@ edition = "2021"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-lotic = "0.0.1"
+lotic = "0.0.1-alpha"
 
 [lints.rust.unexpected_cfgs]
 level = "warn"

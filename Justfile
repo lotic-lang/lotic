@@ -14,6 +14,7 @@ build-test-programs:
     @./target/release/lotic-cli build -- --manifest-path tests/constraint-program-token/Cargo.toml
     @./target/release/lotic-cli build -- --manifest-path tests/constraint-program-tokenkeg/Cargo.toml
     @./target/release/lotic-cli build -- --manifest-path tests/constraint-program-tokenz/Cargo.toml
+    @./target/release/lotic-cli build -- --manifest-path tests/constraint-program-vote/Cargo.toml
     @./target/release/lotic-cli build -- --manifest-path tests/constraint-signer/Cargo.toml
     @./target/release/lotic-cli build -- --manifest-path tests/constraint-writable/Cargo.toml
 
@@ -59,6 +60,7 @@ test:
     @cargo test --manifest-path tests/constraint-program-token/Cargo.toml --all-features
     @cargo test --manifest-path tests/constraint-program-tokenkeg/Cargo.toml --all-features
     @cargo test --manifest-path tests/constraint-program-tokenz/Cargo.toml --all-features
+    @cargo test --manifest-path tests/constraint-program-vote/Cargo.toml --all-features
     @cargo test --manifest-path tests/constraint-signer/Cargo.toml --all-features
     @cargo test --manifest-path tests/constraint-writable/Cargo.toml --all-features
 

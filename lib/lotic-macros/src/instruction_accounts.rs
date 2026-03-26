@@ -38,6 +38,12 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                                 return Err(::lotic::pinocchio::error::ProgramError::Immutable);
                             }
                         });
+                    } else if meta.path.is_ident("executable") {
+                        validations.push(quote! {
+                            if !self.#field_ident.executable() {
+                                return Err(::lotic::pinocchio::error::ProgramError::Custom(0));
+                            }
+                        });
                     } else if meta.path.is_ident("program") {
                         meta.value()?; // Consume =
                         let account_type: syn::Path = meta.input.parse()?;

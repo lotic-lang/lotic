@@ -44,4 +44,6 @@ pub struct Initialize {
     pub account: AccountView,
     #[lotic(owner = "AGZY3PqUNvRwRai7HPaZW28kb7Z4ua14adaA6kc8reV")]
     pub account2: AccountView,
+    #[lotic(executable)]
+    pub account3: AccountView,
 }

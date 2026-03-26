@@ -3612,6 +3612,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "test-constraint-address"
+version = "0.0.0"
+dependencies = [
+ "lotic",
+ "mollusk-svm",
+ "solana-sdk",
+]
+
+[[package]]
 name = "test-constraint-program-compute-budget"
 version = "0.0.0"
 dependencies = [

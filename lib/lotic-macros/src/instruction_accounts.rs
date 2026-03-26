@@ -112,6 +112,18 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                                 return Err(::lotic::pinocchio::error::ProgramError::InvalidAccountData);
                             }
                         });
+                    } else if meta.path.is_ident("owner") {
+                        let value: syn::LitStr = meta.value()?.parse()?;
+                        let address = value.value();
+                        let is_valid = bs58::decode(&address).into_vec().map(|v| v.len() == 32).unwrap_or(false);
+                        if !is_valid {
+                            panic!("Invalid Solana address: {}", address);
+                        }
+                        validations.push(quote! {
+                            if !self.#field_ident.owned_by(&::lotic::pinocchio::Address::from_str_const(#address)){
+                                return Err(::lotic::pinocchio::error::ProgramError::InvalidAccountOwner);
+                            }
+                        });
                     }
                     Ok(())
                 });

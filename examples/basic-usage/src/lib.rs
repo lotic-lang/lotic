@@ -46,4 +46,6 @@ pub struct Initialize {
     pub account2: AccountView,
     #[lotic(executable)]
     pub account3: AccountView,
+    #[lotic(sysvar = clock)]
+    pub account4: AccountView,
 }

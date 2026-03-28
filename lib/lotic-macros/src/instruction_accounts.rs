@@ -106,6 +106,16 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                                 }
                             });
                         }
+                    } else if meta.path.is_ident("sysvar") {
+                        let sysvar_type: syn::Path = meta.value()?.parse()?;
+                        if sysvar_type.is_ident("clock") {
+                            validations.push(quote! {
+                                let clock_sysvar_address = ::lotic::pinocchio::Address::from_str_const("SysvarC1ock11111111111111111111111111111111");
+                                if self.#field_ident.address()!= &clock_sysvar_address {
+                                    return Err(::lotic::pinocchio::error::ProgramError::IncorrectProgramId);
+                                }
+                            });
+                        }
                     } else if meta.path.is_ident("address") {
                         let value: syn::LitStr = meta.value()?.parse()?;
                         let address = value.value();

@@ -1,6 +1,12 @@
 NIGHTLY_TOOLCHAIN := "nightly-2026-01-23"
 SOLANA_VERSION := "3.1.10"
 
+# Audit Crates
+audit:
+    @cargo audit --ignore RUSTSEC-2025-0141 \
+                 --ignore RUSTSEC-2024-0388 \
+                 --ignore RUSTSEC-2024-0436 \
+
 # Build Lotic CLI
 build-lotic-cli:
     @cargo build --release --manifest-path ./cli/Cargo.toml

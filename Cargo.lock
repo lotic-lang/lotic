@@ -3727,6 +3727,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "test-constraint-sysvar-clock"
+version = "0.0.0"
+dependencies = [
+ "lotic",
+ "mollusk-svm",
+ "solana-sdk",
+]
+
+[[package]]
 name = "test-constraint-writable"
 version = "0.0.0"
 dependencies = [

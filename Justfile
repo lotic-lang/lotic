@@ -6,6 +6,7 @@ audit:
     @cargo audit --ignore RUSTSEC-2025-0141 \
                  --ignore RUSTSEC-2024-0388 \
                  --ignore RUSTSEC-2024-0436 \
+                 --deny warnings
 
 # Build Lotic CLI
 build-lotic-cli:

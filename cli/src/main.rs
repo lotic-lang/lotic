@@ -16,6 +16,9 @@ fn main() -> anyhow::Result<()> {
         Commands::Init { project_name } => {
             command_processor::run_init(project_name)?;
         }
+        Commands::Expand { cargo_args } => {
+            command_processor::run_expand(cargo_args)?;
+        }
     }
 
     Ok(())

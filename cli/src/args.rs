@@ -20,4 +20,10 @@ pub enum Commands {
         #[clap(required = false, last = true)]
         cargo_args: Vec<String>,
     },
+    /// Macro expansion
+    Expand {
+        /// Arguments for `cargo expand`
+        #[clap(required = false, last = true)]
+        cargo_args: Vec<String>,
+    },
 }

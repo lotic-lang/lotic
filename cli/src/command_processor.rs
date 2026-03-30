@@ -119,6 +119,8 @@ pub fn run_build(cargo_args: Vec<String>) -> Result<()> {
         .canonicalize_utf8()
         .context("Failed to canonicalize manifest path")?;
 
+    let output_path = generate_ix_metadata(absolute_manifest_path)?;
+    
     let exit = std::process::Command::new("cargo")
         .arg("build-sbf")
         .args(&cargo_args)
@@ -127,7 +129,6 @@ pub fn run_build(cargo_args: Vec<String>) -> Result<()> {
         .output()
         .map_err(|e| anyhow::format_err!("{}", e))?;
 
-    let output_path = generate_ix_metadata(absolute_manifest_path)?;
     std::fs::remove_file(output_path)?;
 
     if !exit.status.success() {

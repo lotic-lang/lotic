@@ -120,7 +120,7 @@ pub fn run_build(cargo_args: Vec<String>) -> Result<()> {
         .context("Failed to canonicalize manifest path")?;
 
     let output_path = generate_ix_metadata(absolute_manifest_path)?;
-    
+
     let exit = std::process::Command::new("cargo")
         .arg("build-sbf")
         .args(&cargo_args)

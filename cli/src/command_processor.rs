@@ -67,6 +67,28 @@ struct InstructionFn {
     ix_args: Vec<FieldDetail>,
 }
 
+fn generate_ix_metadata(absolute_manifest_path: Utf8PathBuf) -> Result<Utf8PathBuf, anyhow::Error> {
+    let rust_files = collect_workspace_rust_files(&absolute_manifest_path)?;
+    let instructions = collect_instruction_functions(&rust_files)?;
+    let json = serde_json::to_string_pretty(&instructions)?;
+
+    let metadata = MetadataCommand::new()
+        .manifest_path(&absolute_manifest_path)
+        .exec()?;
+
+    let package_name = package_name_from_manifest(&absolute_manifest_path)?;
+    let file_name = format!("{package_name}-instructions.json");
+    let output_path = metadata.target_directory.join(&file_name);
+
+    std::fs::create_dir_all(&metadata.target_directory)
+        .map_err(|e| anyhow::anyhow!("Failed to create target directory: {e}"))?;
+
+    std::fs::write(&output_path, &json)
+        .map_err(|e| anyhow::anyhow!("Failed to write `{file_name}`: {e}"))?;
+
+    Ok(output_path)
+}
+
 pub fn run_build(cargo_args: Vec<String>) -> Result<()> {
     let mut manifest_path_raw = None;
 
@@ -97,23 +119,7 @@ pub fn run_build(cargo_args: Vec<String>) -> Result<()> {
         .canonicalize_utf8()
         .context("Failed to canonicalize manifest path")?;
 
-    let rust_files = collect_workspace_rust_files(&absolute_manifest_path)?;
-    let instructions = collect_instruction_functions(&rust_files)?;
-    let json = serde_json::to_string_pretty(&instructions)?;
-
-    let metadata = MetadataCommand::new()
-        .manifest_path(&absolute_manifest_path)
-        .exec()?;
-
-    let package_name = package_name_from_manifest(&absolute_manifest_path)?;
-    let file_name = format!("{package_name}-instructions.json");
-    let output_path = metadata.target_directory.join(&file_name);
-
-    std::fs::create_dir_all(&metadata.target_directory)
-        .map_err(|e| anyhow::anyhow!("Failed to create target directory: {e}"))?;
-
-    std::fs::write(&output_path, &json)
-        .map_err(|e| anyhow::anyhow!("Failed to write `{file_name}`: {e}"))?;
+    let output_path = generate_ix_metadata(absolute_manifest_path)?;
 
     let exit = std::process::Command::new("cargo")
         .arg("build-sbf")
@@ -532,5 +538,52 @@ pub struct Hello {}
     std::fs::write(src_path.join("lib.rs"), lib_rs).context("Failed to write src/lib.rs")?;
 
     println!("Successfully initialized '{crate_name}'");
+    Ok(())
+}
+
+pub fn run_expand(cargo_args: Vec<String>) -> Result<()> {
+    let mut manifest_path_raw = None;
+
+    for (i, arg) in cargo_args.iter().enumerate() {
+        if arg == "--manifest-path" {
+            if let Some(path) = cargo_args.get(i + 1) {
+                manifest_path_raw = Some(path.clone());
+            }
+            break;
+        } else if arg.starts_with("--manifest-path=") {
+            if let Some((_, path)) = arg.split_once('=') {
+                manifest_path_raw = Some(path.to_string());
+            }
+            break;
+        }
+    }
+
+    let manifest_path = match manifest_path_raw {
+        Some(p) => Utf8PathBuf::from(p),
+        None => std::env::current_dir()?.join("Cargo.toml").try_into()?,
+    };
+
+    if !manifest_path.exists() {
+        anyhow::bail!("Manifest file not found: {}", manifest_path);
+    }
+
+    let absolute_manifest_path = manifest_path
+        .canonicalize_utf8()
+        .context("Failed to canonicalize manifest path")?;
+
+    generate_ix_metadata(absolute_manifest_path)?;
+
+    let exit = std::process::Command::new("cargo")
+        .arg("expand")
+        .args(&cargo_args)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .output()
+        .map_err(|e| anyhow::format_err!("{}", e))?;
+
+    if !exit.status.success() {
+        std::process::exit(exit.status.code().unwrap_or(1));
+    }
+
     Ok(())
 }

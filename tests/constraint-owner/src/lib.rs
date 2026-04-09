@@ -12,7 +12,7 @@ fn initialize(_ctx: Context<Initialize>) -> ProgramResult {
 }
 
 #[derive(InstructionAccounts)]
-pub struct Initialize {
+pub struct Initialize<'a> {
     #[lotic(owner = "2JF8AjwkmCz6brkAkJf8NEEKhg89a8KrTuDZiZ5cVdS2")]
-    pub account: AccountView,
+    pub account: &'a mut AccountView,
 }

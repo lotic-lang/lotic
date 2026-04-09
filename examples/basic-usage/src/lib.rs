@@ -1,5 +1,6 @@
 use lotic::{
-    Account, Context, InstructionAccounts, account_state, declare_program, instruction, pinocchio::{AccountView, Address, ProgramResult, account}
+    account_state, declare_program, instruction, pinocchio::ProgramResult, Account, Context,
+    InstructionAccounts,
 };
 
 declare_program!("2JF8AjwkmCz6brkAkJf8NEEKhg89a8KrTuDZiZ5cVdS2");

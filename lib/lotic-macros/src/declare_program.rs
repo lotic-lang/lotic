@@ -1,10 +1,9 @@
 use {
-    cargo_metadata::MetadataCommand,
+    crate::metadata_reader,
     pinocchio::Address,
     proc_macro::TokenStream,
     quote::quote,
     serde::Deserialize,
-    std::fs,
     syn::{parse_macro_input, Ident, LitStr},
 };
 
@@ -62,42 +61,10 @@ impl ArgDetail {
     }
 }
 
-fn read_instructions() -> Option<String> {
-    let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set");
-    let local_manifest_path = std::path::Path::new(&manifest_dir).join("Cargo.toml");
-
-    let metadata = MetadataCommand::new()
-        .manifest_path(&local_manifest_path)
-        .no_deps()
-        .exec()
-        .expect("Failed to fetch cargo metadata for the current crate");
-
-    let package = metadata
-        .packages
-        .iter()
-        .find(|pkg| pkg.manifest_path == local_manifest_path)
-        .unwrap_or_else(|| {
-            panic!(
-                "Could not find package info for manifest at {:?}",
-                local_manifest_path
-            )
-        });
-
-    let package_name = &package.name;
-
-    let json_path = metadata
-        .target_directory
-        .join(format!("{package_name}-instructions.json"));
-
-    fs::read_to_string(json_path).ok()
-}
-
 fn generate_deserializer(field_name: &Ident, field: &FieldDetail) -> proc_macro2::TokenStream {
     let inner_logic = match &field.r#type {
-        ArgDetail::Complex { name, fields } if is_virtual_wrapper(name) => {
-            let next_layer = fields
-                .first()
-                .expect("Virtual container missing inner field");
+        ArgDetail::Complex { name, fields } if is_container(name) => {
+            let next_layer = fields.first().expect("Container missing inner field");
             let inner_val_name = quote::format_ident!("_inner_val");
             let inner_read = generate_deserializer(&inner_val_name, next_layer);
             quote! { { #inner_read #inner_val_name } }
@@ -197,7 +164,7 @@ fn generate_deserializer(field_name: &Ident, field: &FieldDetail) -> proc_macro2
     }
 }
 
-fn is_virtual_wrapper(name: &str) -> bool {
+fn is_container(name: &str) -> bool {
     matches!(name, "Array" | "Vec" | "Option" | "Result" | "Set" | "Map")
 }
 
@@ -241,8 +208,17 @@ fn generate_arg_read(arg: &ArgDetail) -> proc_macro2::TokenStream {
                     }
                 },
                 _other => {
-                    // Handle custom types that might not be in our registry but implement Borsh
-                    quote! { #type_ident::deserialize(&mut &_args[offset..]).unwrap() }
+                    let full_type_name = quote!(#type_ident).to_string();
+
+                    // Panic during compilation
+                    panic!(
+                        "\n\n[Serialization Error] The type `{}` is too complex.\nThe macro \
+                         cannot automatically resolve this type because it is either not a known \
+                         primitive and/or wasn't found in the local registry. \n\nResolution: \
+                         Either simplify the type or ensure there is no recursive definition in \
+                         its type.\n",
+                        full_type_name
+                    );
                 }
             }
         }
@@ -343,7 +319,7 @@ pub fn declare_program(input: TokenStream) -> TokenStream {
 
     let program_id_bytes = decoded.iter();
 
-    let instructions: Vec<InstructionFn> = read_instructions()
+    let instructions = metadata_reader::read_metadata("instructions.json")
         .and_then(|json| {
             let res = serde_json::from_str::<Vec<InstructionFn>>(&json);
             if let Err(ref e) = res {
@@ -391,7 +367,7 @@ pub fn declare_program(input: TokenStream) -> TokenStream {
         #[inline(always)]
         pub fn __process_instruction__(
             program_id: &::lotic::pinocchio::Address,
-            accounts: &[::lotic::pinocchio::AccountView],
+            accounts: &mut [::lotic::pinocchio::AccountView],
             instruction_data: &[u8],
         ) -> ::lotic::pinocchio::ProgramResult {
             if program_id != &__PROGRAM_ID__ {

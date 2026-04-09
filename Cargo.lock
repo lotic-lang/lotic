@@ -1375,6 +1375,7 @@ checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
 name = "lotic"
 version = "0.0.1-alpha"
 dependencies = [
+ "bytemuck",
  "lotic-macros",
  "pinocchio",
  "solana-address 2.4.0",
@@ -1403,6 +1404,7 @@ name = "lotic-macros"
 version = "0.0.1-alpha"
 dependencies = [
  "bs58",
+ "bytemuck",
  "camino",
  "cargo_metadata",
  "pinocchio",
@@ -1685,12 +1687,11 @@ dependencies = [
 [[package]]
 name = "pinocchio"
 version = "0.10.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c06810dac15a4ef83d3dabdb4f2f22fb39c9adff669cd2781da4f716510a647c"
+source = "git+https://github.com/anza-xyz/pinocchio/?rev=009301423f920fd105bd32a25560d127b6f0bf4f#009301423f920fd105bd32a25560d127b6f0bf4f"
 dependencies = [
  "solana-account-view",
  "solana-address 2.4.0",
- "solana-define-syscall 4.0.1",
+ "solana-define-syscall 5.0.0",
  "solana-instruction-view",
  "solana-program-error",
 ]
@@ -2183,9 +2184,9 @@ dependencies = [
 
 [[package]]
 name = "solana-account-view"
-version = "1.0.0"
+version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f37ca34c37f92ee341b73d5ce7c8ef5bb38e9a87955b4bd343c63fa18b149215"
+checksum = "fc141b940560430425ebaadb7645496c45f6a10fad9911d719bd03eab7f4d422"
 dependencies = [
  "solana-address 2.4.0",
  "solana-program-error",
@@ -2599,13 +2600,13 @@ dependencies = [
 
 [[package]]
 name = "solana-instruction-view"
-version = "1.0.0"
+version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "60147e4d0a4620013df40bf30a86dd299203ff12fcb8b593cd51014fce0875d8"
+checksum = "7c35d02cd27575b1fd05938d3624e476b0173208139053b51aa48dd9bec149f1"
 dependencies = [
  "solana-account-view",
  "solana-address 2.4.0",
- "solana-define-syscall 4.0.1",
+ "solana-define-syscall 5.0.0",
  "solana-program-error",
 ]
 

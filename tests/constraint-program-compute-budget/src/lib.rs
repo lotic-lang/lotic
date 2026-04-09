@@ -12,8 +12,8 @@ fn initialize(_ctx: Context<Initialize>) -> ProgramResult {
 }
 
 #[derive(InstructionAccounts)]
-pub struct Initialize {
-    pub user: AccountView,
+pub struct Initialize<'a> {
+    pub user: &'a mut AccountView,
     #[lotic(program = compute_budget)]
-    pub compute_budget_program: AccountView,
+    pub compute_budget_program: &'a mut AccountView,
 }

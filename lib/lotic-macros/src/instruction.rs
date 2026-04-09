@@ -5,8 +5,7 @@ use {
 };
 
 // This will only check the signature of the instruction functions, it will
-// result in error if the first argument isnt &Context<T> or if the rest of the
-// argument isnt a reference.
+// result in error if the first argument isnt Context<T>.
 pub fn instruction(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let inputs = &input.sig.inputs;

@@ -5,6 +5,7 @@ edition = { workspace = true }
 license = { workspace = true }
 
 [dependencies]
+bytemuck = { workspace = true }
 lotic-macros = { path = "lotic-macros" }
 pinocchio = { workspace = true }
 solana-address = { version = "2.2", features = ["decode"] }

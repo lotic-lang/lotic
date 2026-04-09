@@ -1,51 +1,30 @@
 use lotic::{
-    declare_program, instruction,
-    pinocchio::{AccountView, Address, ProgramResult},
-    Context, InstructionAccounts,
+    account_state, declare_program, instruction, pinocchio::ProgramResult, Account, Context,
+    InstructionAccounts,
 };
 
 declare_program!("2JF8AjwkmCz6brkAkJf8NEEKhg89a8KrTuDZiZ5cVdS2");
 
 #[instruction]
 fn initialize(ctx: Context<Initialize>) -> ProgramResult {
-    ctx.accounts
-        .authority
-        .set_lamports(ctx.accounts.authority.lamports().checked_sub(5).unwrap());
-    ctx.accounts
-        .data_account
-        .set_lamports(ctx.accounts.data_account.lamports().checked_add(5).unwrap());
-    Ok(())
-}
-
-#[instruction]
-fn aupdate(_ctx: Context<Initialize>) -> ProgramResult {
-    let _vote_program_address =
-        Address::from_str_const("Vote111111111111111111111111111111111111111");
-
-    Ok(())
-}
-
-#[instruction]
-fn update(_ctx: Context<Initialize>) -> ProgramResult {
+    ctx.accounts.account.state.age = NewAccount2 { name: 1, age: 1 };
     Ok(())
 }
 
 #[derive(InstructionAccounts)]
-pub struct Initialize {
-    #[lotic(mut, signer)]
-    pub authority: AccountView,
-    #[lotic(mut)]
-    pub data_account: AccountView,
-    #[lotic(program = token)]
-    pub token_program: AccountView,
-    #[lotic(program = system)]
-    pub system_account: AccountView,
-    #[lotic(address = "AGZY3PqUNvRwRai7HPaZW28kb7Z4ua14adaA6kc8reV")]
-    pub account: AccountView,
-    #[lotic(owner = "AGZY3PqUNvRwRai7HPaZW28kb7Z4ua14adaA6kc8reV")]
-    pub account2: AccountView,
-    #[lotic(executable)]
-    pub account3: AccountView,
-    #[lotic(sysvar = clock)]
-    pub account4: AccountView,
+pub struct Initialize<'b> {
+    #[lotic(signer)]
+    pub account: Account<'b, NewAccount>,
+}
+
+#[account_state]
+pub struct NewAccount {
+    name: u32,
+    age: NewAccount2,
+}
+
+#[account_state]
+pub struct NewAccount2 {
+    name: u32,
+    age: u32,
 }

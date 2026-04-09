@@ -10,6 +10,7 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
 
     let mut validations = Vec::new();
     let mut field_idents = Vec::new();
+    let mut constructors = Vec::new();
 
     let Data::Struct(data) = input.data else {
         return TokenStream::new();
@@ -21,7 +22,28 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
 
     for field in fields.named {
         let field_ident = field.ident.unwrap(); // Because We are expecting named structs.
+        let field_type = &field.ty;
         field_idents.push(field_ident.clone());
+
+        let constructor = if let syn::Type::Path(type_path) = field_type {
+            let segment = type_path.path.segments.last().unwrap();
+            let base_ident = &segment.ident;
+
+            if let syn::PathArguments::AngleBracketed(args) = &segment.arguments {
+                let types_only: Vec<_> = args
+                    .args
+                    .iter()
+                    .filter(|arg| !matches!(arg, syn::GenericArgument::Lifetime(_)))
+                    .collect();
+                quote! { #base_ident::< 'a, #(#types_only),* >::new(#field_ident) }
+            } else {
+                quote! { #field_ident }
+            }
+        } else {
+            quote! { #field_ident }
+        };
+
+        constructors.push(constructor);
 
         for attr in &field.attrs {
             if attr.path().is_ident("lotic") {
@@ -148,25 +170,27 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
     }
 
     let expanded = quote! {
-        impl core::convert::TryFrom<&[::lotic::pinocchio::AccountView]> for #struct_ident  {
+        impl<'a> core::convert::TryFrom<&'a mut [::lotic::pinocchio::AccountView]> for #struct_ident<'a> {
             type Error = ::lotic::pinocchio::error::ProgramError;
 
-            fn try_from(accounts: &[::lotic::pinocchio::AccountView]) -> Result<Self, Self::Error> {
+            fn try_from(accounts: &'a mut [::lotic::pinocchio::AccountView]) -> Result<Self, Self::Error> {
                 let [#(#field_idents,)* ..] = accounts else {
                     return Err(::lotic::pinocchio::error::ProgramError::NotEnoughAccountKeys);
                 };
 
-                let accounts = Self {#(
-                    #field_idents:  #field_idents.clone(),
-                )*
-            };
+                let accounts_struct = Self {
+                    #(
+                        #field_idents: #constructors,
+                    )*
+                };
 
-                accounts.check_constraints()?;
-                Ok(accounts)
+                accounts_struct.check_constraints()?;
+                Ok(accounts_struct)
             }
         }
 
-        impl #struct_ident {
+        impl<'a> #struct_ident<'a> {
+            #[inline(always)]
             fn check_constraints(&self) -> Result<(), ::lotic::pinocchio::error::ProgramError> {
                 #(#validations)*
                 Ok(())

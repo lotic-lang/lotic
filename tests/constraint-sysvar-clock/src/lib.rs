@@ -12,7 +12,7 @@ fn initialize(_ctx: Context<Initialize>) -> ProgramResult {
 }
 
 #[derive(InstructionAccounts)]
-pub struct Initialize {
+pub struct Initialize<'a> {
     #[lotic(sysvar = clock)]
-    pub account: AccountView,
+    pub account: &'a mut AccountView,
 }

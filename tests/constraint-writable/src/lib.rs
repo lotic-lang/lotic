@@ -13,6 +13,6 @@ fn initialize(_ctx: Context<Initialize>) -> ProgramResult {
 
 #[derive(InstructionAccounts)]
 pub struct Initialize<'a> {
-    #[lotic(mut)]
+    #[lotic(writable)]
     pub account: &'a mut AccountView,
 }

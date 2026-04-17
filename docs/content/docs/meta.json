@@ -1,0 +1,11 @@
+{
+  "title": "docs",
+  "description": "The description of root folder",
+  "pages": [
+    "whats-new",
+    "test",
+    
+    "---References---",
+    "references"
+  ]
+}

@@ -1,0 +1,131 @@
+---
+title: Account Constraints
+description: Lotic Account Constraints
+---
+
+Account constraints are checks applied to incoming accounts. They act like conditional logic, if the required conditions are met, execution continues; if not, an error is thrown.
+
+## Account Constraints
+
+### `#[lotic(address = str)]`
+
+Checks whether the passed account's address is met.
+
+Example:
+
+```rust
+#[derive(InstructionAccounts)]
+pub struct Initialize<'a> {
+    #[lotic(address = "So11111111111111111111111111111111111111112")]
+    pub account: &'a mut AccountView,
+}
+```
+
+### `#[lotic(executable)]`
+
+Checks whether the passed account is executable or not.
+
+Example:
+
+```rust
+#[derive(InstructionAccounts)]
+pub struct Initialize<'a> {
+    #[lotic(executable)]
+    pub account: &'a mut AccountView,
+}
+```
+
+### `#[lotic(owner = str)]`
+
+Checks whether the passed account's owner is met.
+
+Example:
+
+```rust
+#[derive(InstructionAccounts)]
+pub struct Initialize<'a> {
+    #[lotic(owner = "11111111111111111111111111111111")]
+    pub account: &'a mut AccountView,
+}
+```
+
+### `#[lotic(program = <program-name>)]`
+
+Checks whether the passed account is the exepected program.
+
+`<program-name>` should be the name of the program, current supported programs are.
+
+`compute_budget`: Checks whether the passed account is the Compute Budget Program. <br/>
+`config`: Checks whether the passed account is the Config Program. <br/>
+`stake`: Checks whether the passed account is the Stake Program. <br/>
+`system`: Checks whether the passed account is the System Program. <br/>
+`token`: Checks whether the passed account is the Classic-Token or the Token Extension program. <br/>
+`tokenkeg`: Checks whether the passed account is the Classic-Token Program. <br/>
+`tokenz`: Checks whether the passed account is the Token Extension Program. <br/>
+`tokenz`: Checks whether the passed account is the Vote Program. <br/>
+
+Examples:
+
+```rust
+#[derive(InstructionAccounts)]
+pub struct Initialize<'a> {
+    pub user: &'a mut AccountView,
+    #[lotic(program = token)]
+    pub compute_budget_program: &'a mut AccountView,
+}
+```
+
+```rust
+#[derive(InstructionAccounts)]
+pub struct Initialize<'a> {
+    pub user: &'a mut AccountView,
+    #[lotic(program = stake)]
+    pub compute_budget_program: &'a mut AccountView,
+}
+```
+
+### `#[lotic(signer)]`
+
+Checks whether the passed account is the signer.
+
+Example:
+
+```rust
+#[derive(InstructionAccounts)]
+pub struct Initialize<'a> {
+    #[lotic(signer)]
+    pub account: &'a mut AccountView,
+}
+```
+
+### `#[lotic(sysvar = <sysvar-account-name>)]`
+
+Checks whether the passed account is the expected sysvar account.
+
+`<sysvar-account-name>` should be the name of the sysvar account, current supported sysvar accounts are.
+
+`clock`: Checks whether the passed account is the Clock sysvar account. <br/>
+
+Example:
+
+```rust
+#[derive(InstructionAccounts)]
+pub struct Initialize<'a> {
+    #[lotic(sysvar = clock)]
+    pub account: &'a mut AccountView,
+}
+```
+
+### `#[lotic(writable)]`
+
+Checks whether the passed account is writable.
+
+Example:
+
+```rust
+#[derive(InstructionAccounts)]
+pub struct Initialize<'a> {
+    #[lotic(writable)]
+    pub account: &'a mut AccountView,
+}
+```

@@ -1,0 +1,28 @@
+---
+title: What's New
+description: What's New in Lotic?
+---
+
+## Solana Programming Paradigm
+
+Lotic takes a slightly different approach to defining instructions compared to frameworks like Anchor.
+
+In Anchor, instructions are typically defined within a module. In Lotic, this structure is not required. Instead, instructions can be declared directly on functions by prepending the `#[instruction]` macro.
+
+This allows instruction definitions to live alongside regular functions without needing an enclosing module.
+
+## Metadata Extraction
+
+This behavior is enabled through metadata extraction.
+
+When a function is annotated with `#[instruction]`, Lotic extracts metadata from the function at compile time. This metadata is then used later to construct and handle the corresponding instruction.
+
+## What This Changes
+
+- Instructions do not need to be grouped inside a module
+- Functions can be annotated directly to become instructions
+- The framework relies on extracted metadata rather than structural conventions
+
+Overall, this results in a different way of organizing instruction logic, while keeping the underlying concepts familiar.
+
+We can loosely say Lotic brings a new Solana programming paradigm.

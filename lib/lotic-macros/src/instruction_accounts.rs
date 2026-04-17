@@ -54,7 +54,7 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                                 return Err(::lotic::pinocchio::error::ProgramError::MissingRequiredSignature);
                             }
                         });
-                    } else if meta.path.is_ident("mut") {
+                    } else if meta.path.is_ident("writable") {
                         validations.push(quote! {
                             if !self.#field_ident.is_writable() {
                                 return Err(::lotic::pinocchio::error::ProgramError::Immutable);

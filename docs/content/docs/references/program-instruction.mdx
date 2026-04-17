@@ -1,0 +1,27 @@
+---
+title: Program Instruction
+description: Lotic Program Instruction
+---
+
+Instructions in Lotic are a bit different, they are easy to write, you just have to prepend a
+function with the macro `#[instruction]`, also instruction discriminators are 1 byte.
+The byte is assigned by sorting the function names by ascending.
+
+Example
+
+```rust
+use lotic::{
+    account_state, declare_program, instruction, pinocchio::ProgramResult, Account, Context,
+    InstructionAccounts,
+};
+
+declare_program!("2JF8AjwkmCz6brkAkJf8NEEKhg89a8KrTuDZiZ5cVdS2");
+
+#[instruction]
+fn hello(ctx: Context<HelloSolana>) -> ProgramResult {
+    Ok(())
+}
+
+#[derive(InstructionAccounts)]
+pub struct HelloSolana {}
+```

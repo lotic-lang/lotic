@@ -56,6 +56,6 @@ jobs:
           echo "DEPLOYMENT_URL=$URL" >> $GITHUB_ENV
           echo "url=$URL" >> $GITHUB_OUTPUT
 
-      - name: Print deployment info
+      - name: Print deployment site
         run: |
-          echo "Deployment info: $DEPLOYMENT_INFO"
+          echo "The site is live at: $DEPLOYMENT_URL"

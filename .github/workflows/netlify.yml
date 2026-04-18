@@ -41,13 +41,11 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             url=$(netlify deploy \
-              --dir=docs \
               --site=${{ secrets.NETLIFY_PROJECT_ID }} \
               --auth=${{ secrets.NETLIFY_AUTH_TOKEN }})
           else
             url=$(netlify deploy \
               --prod \
-              --dir=docs \
               --site=${{ secrets.NETLIFY_PROJECT_ID }} \
               --auth=${{ secrets.NETLIFY_AUTH_TOKEN }})
           fi

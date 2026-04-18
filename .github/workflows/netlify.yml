@@ -1,0 +1,60 @@
+name: Netlify Deployment
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: docs
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install dependencies (pnpm)
+        run: pnpm install
+
+      - name: Build project
+        run: pnpm run build
+
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Deploy to Netlify
+        id: deploy
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            url=$(netlify deploy \
+              --dir=docs \
+              --site=${{ secrets.NETLIFY_PROJECT_ID }} \
+              --auth=${{ secrets.NETLIFY_AUTH_TOKEN }})
+          else
+            url=$(netlify deploy \
+              --prod \
+              --dir=docs \
+              --site=${{ secrets.NETLIFY_PROJECT_ID }} \
+              --auth=${{ secrets.NETLIFY_AUTH_TOKEN }})
+          fi
+
+          echo "DEPLOYMENT_URL=$url" >> $GITHUB_ENV
+          echo "url=$url" >> $GITHUB_OUTPUT
+
+      - name: Print deployment URL
+        run: |
+          echo "Deployment URL: $DEPLOYMENT_URL"

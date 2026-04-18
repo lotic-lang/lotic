@@ -40,20 +40,21 @@ jobs:
         id: deploy
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            deployment_info=$(netlify deploy \
+            JSON_OUT=$(netlify deploy \
             --site=${{ secrets.NETLIFY_PROJECT_ID }} \
             --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} \
             --json)
           else
-            deployment_info=$(netlify deploy \
-            --prod \
+            JSON_OUT=$(netlify deploy --prod \ 
             --site=${{ secrets.NETLIFY_PROJECT_ID }} \
             --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} \
             --json)
           fi
 
-          echo "DEPLOYMENT_INFO=$deployment_info" >> $GITHUB_ENV
-          echo "DEPLOYMENT_INFO=$deployment_info" >> $GITHUB_OUTPUT
+          URL=$(echo "$JSON_OUT" | jq -r '.deploy_url')
+
+          echo "DEPLOYMENT_URL=$URL" >> $GITHUB_ENV
+          echo "url=$URL" >> $GITHUB_OUTPUT
 
       - name: Print deployment info
         run: |

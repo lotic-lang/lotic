@@ -52,8 +52,8 @@ jobs:
             --json)
           fi
 
-          echo "DEPLOYMENT_INFO=$url" >> $GITHUB_ENV
-          echo "DEPLOYMENT_INFO=$url" >> $GITHUB_OUTPUT
+          echo "DEPLOYMENT_INFO=$deployment_info" >> $GITHUB_ENV
+          echo "DEPLOYMENT_INFO=$deployment_info" >> $GITHUB_OUTPUT
 
       - name: Print deployment info
         run: |

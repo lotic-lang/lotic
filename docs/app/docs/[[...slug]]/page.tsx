@@ -54,6 +54,7 @@ export async function generateMetadata(props: PageProps<'/docs/[[...slug]]'>): P
   if (!page) notFound();
 
   return {
+    metadataBase: new URL('https://lotic-lang-docs.netlify.app'),
     title: page.data.title,
     description: page.data.description,
     openGraph: {

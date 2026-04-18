@@ -42,14 +42,14 @@ jobs:
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             deployment_info=$(netlify deploy \
             --site=${{ secrets.NETLIFY_PROJECT_ID }} \
-            --auth=${{ secrets.NETLIFY_AUTH_TOKEN }}) \
-            --json
+            --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} \
+            --json)
           else
             deployment_info=$(netlify deploy \
             --prod \
             --site=${{ secrets.NETLIFY_PROJECT_ID }} \
-            --auth=${{ secrets.NETLIFY_AUTH_TOKEN }}) \
-            --json
+            --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} \
+            --json)
           fi
 
           echo "DEPLOYMENT_INFO=$url" >> $GITHUB_ENV

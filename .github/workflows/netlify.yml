@@ -1,0 +1,61 @@
+name: Netlify Deployment
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: docs
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install dependencies (pnpm)
+        run: pnpm install
+
+      - name: Build project
+        run: pnpm run build
+
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Deploy to Netlify
+        id: deploy
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            JSON_OUT=$(netlify deploy \
+            --site=${{ secrets.NETLIFY_PROJECT_ID }} \
+            --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} \
+            --json)
+          else
+            JSON_OUT=$(netlify deploy --prod \ 
+            --site=${{ secrets.NETLIFY_PROJECT_ID }} \
+            --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} \
+            --json)
+          fi
+
+          URL=$(echo "$JSON_OUT" | jq -r '.deploy_url')
+
+          echo "DEPLOYMENT_URL=$URL" >> $GITHUB_ENV
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
+      - name: Print deployment site
+        run: |
+          echo "The site is live at: $DEPLOYMENT_URL"

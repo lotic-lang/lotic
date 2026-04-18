@@ -45,7 +45,7 @@ jobs:
             --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} \
             --json)
           else
-            JSON_OUT=$(netlify deploy --prod \ 
+            JSON_OUT=$(netlify deploy --prod \
             --site=${{ secrets.NETLIFY_PROJECT_ID }} \
             --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} \
             --json)

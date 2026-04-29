@@ -10,3 +10,4 @@ license = "MIT"
 [workspace.dependencies]
 bytemuck = { version = "1.25.0", features = ["derive"] }
 pinocchio = { git = "https://github.com/anza-xyz/pinocchio/", rev = "009301423f920fd105bd32a25560d127b6f0bf4f" }
+pinocchio-system = { version = "0.6.1" }

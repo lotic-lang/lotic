@@ -1,7 +1,7 @@
 pub use {
     bytemuck,
     lotic_macros::{account_state, declare_program, instruction, InstructionAccounts},
-    pinocchio, solana_address,
+    pinocchio, pinocchio_system, solana_address,
     std::{
         marker::PhantomData,
         ops::{Deref, DerefMut},

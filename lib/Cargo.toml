@@ -8,4 +8,5 @@ license = { workspace = true }
 bytemuck = { workspace = true }
 lotic-macros = { path = "lotic-macros" }
 pinocchio = { workspace = true }
+pinocchio-system = { workspace = true }
 solana-address = { version = "2.2", features = ["decode"] }

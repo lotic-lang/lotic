@@ -1522,7 +1522,8 @@ version = "0.0.1-alpha"
 dependencies = [
  "bytemuck",
  "lotic-macros",
- "pinocchio",
+ "pinocchio 0.10.2",
+ "pinocchio-system",
  "solana-address 2.6.0",
 ]
 
@@ -1552,7 +1553,7 @@ dependencies = [
  "bytemuck",
  "camino",
  "cargo_metadata",
- "pinocchio",
+ "pinocchio 0.10.2",
  "proc-macro2",
  "quote",
  "serde",
@@ -1858,6 +1859,29 @@ dependencies = [
  "solana-define-syscall 5.1.0",
  "solana-instruction-view",
  "solana-program-error",
+]
+
+[[package]]
+name = "pinocchio"
+version = "0.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d707cea2843c1a2fd8ec49e4116ce3fdaedcd552a3ee168b03ce60e627fc0f62"
+dependencies = [
+ "solana-account-view",
+ "solana-address 2.6.0",
+ "solana-define-syscall 5.1.0",
+ "solana-instruction-view",
+ "solana-program-error",
+]
+
+[[package]]
+name = "pinocchio-system"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f3ae2ee67b42e2ac797dd88312da473c895660e270d8093e0ba2749b885b5778"
+dependencies = [
+ "pinocchio 0.11.1",
+ "solana-address 2.6.0",
 ]
 
 [[package]]

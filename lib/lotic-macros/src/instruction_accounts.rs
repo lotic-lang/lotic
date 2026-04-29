@@ -1,4 +1,5 @@
 use {
+    core::panic,
     proc_macro::TokenStream,
     quote::{quote, ToTokens},
     syn::{parse_macro_input, Data, DeriveInput, Fields},
@@ -9,6 +10,7 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
     let struct_ident = input.ident;
 
     let mut validations = Vec::new();
+    let mut processors = Vec::new();
     let mut field_idents = Vec::new();
     let mut constructors = Vec::new();
 
@@ -23,6 +25,9 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
     for field in fields.named {
         let field_ident = field.ident.unwrap(); // Because We are expecting named structs.
         let field_type = &field.ty;
+        let mut init = false;
+        let mut payer: Option<String> = None;
+        let mut space: Option<usize> = None;
         field_idents.push(field_ident.clone());
 
         let constructor = if let syn::Type::Path(type_path) = field_type {
@@ -162,9 +167,56 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                                 return Err(::lotic::pinocchio::error::ProgramError::InvalidAccountOwner);
                             }
                         });
+                    } else if meta.path.is_ident("init") {
+                        if init {
+                            panic!("`init` is already set") 
+                        }
+                        init = true;
+                    } else if meta.path.is_ident("payer") {
+                        if init && payer.is_none() && space.is_none() {
+                            let value: syn::Ident = meta.value()?.parse()?;
+                            payer = Some(value.to_string());
+                        } else if payer.is_some() {
+                            panic!("`payer` is already set");
+                        } else if space.is_some() {
+                            panic!("`payer` should be set before space is set");
+                        } else {
+                            panic!("`init` is required before `payer` is set");
+                        }
+                    } else if meta.path.is_ident("space") {
+                        if init && payer.is_some() && space.is_none() {
+                            let value = meta.value()?;
+                            let space_value: syn::LitInt = value.parse()?;
+                            space = Some(space_value.base10_parse()?);
+                            let payer_ident = payer.as_ref().map(|p| {
+                                quote::format_ident!("{}", p)
+                            });
+                            let space_value = space.unwrap();
+                            processors.push(quote!{
+                                ::lotic::pinocchio_system::instructions::CreateAccount{
+                                    from: self.#payer_ident,
+                                    to: &self.#field_ident,
+                                    lamports: ::lotic::pinocchio::sysvars::rent::Rent::get()?.try_minimum_balance(#space_value)?,
+                                    space: #space_value as u64,
+                                    owner: &__PROGRAM_ID__,
+                                }.invoke()?;
+                            });
+                        } else if payer.is_none() {
+                            panic!("`payer` should be set before space is set");
+                        } else if space.is_some() {
+                            panic!("`space` is already set");
+                        } else {
+                            panic!("`init` is required before `space` is set");
+                        }
                     }
                     Ok(())
                 });
+            }
+            if init && payer.is_none() && space.is_none() {
+                panic!("`payer` and `space` are required for `init`")
+            }
+            if init && payer.is_some() && space.is_none() {
+                panic!("`space` is required for `init` and `payer`")
             }
         }
     }
@@ -185,6 +237,7 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                 };
 
                 accounts_struct.check_constraints()?;
+                accounts_struct.exec_account_processors()?;
                 Ok(accounts_struct)
             }
         }
@@ -193,6 +246,11 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
             #[inline(always)]
             fn check_constraints(&self) -> Result<(), ::lotic::pinocchio::error::ProgramError> {
                 #(#validations)*
+                Ok(())
+            }
+            #[inline(always)]
+            fn exec_account_processors(&self) -> Result<(), ::lotic::pinocchio::error::ProgramError> {
+                #(#processors)*
                 Ok(())
             }
         }

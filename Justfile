@@ -30,6 +30,7 @@ build-test-programs:
     @./target/release/lotic-cli build -- --manifest-path tests/constraint-signer/Cargo.toml
     @./target/release/lotic-cli build -- --manifest-path tests/constraint-sysvar-clock/Cargo.toml
     @./target/release/lotic-cli build -- --manifest-path tests/constraint-writable/Cargo.toml
+    @./target/release/lotic-cli build -- --manifest-path tests/processor-init/Cargo.toml
 
 # Run clippy checks
 clippy:
@@ -80,5 +81,6 @@ test:
     @cargo test --manifest-path tests/constraint-signer/Cargo.toml --all-features
     @cargo test --manifest-path tests/constraint-sysvar-clock/Cargo.toml --all-features
     @cargo test --manifest-path tests/constraint-writable/Cargo.toml --all-features
+    @cargo test --manifest-path tests/processor-init/Cargo.toml --all-features
 
 

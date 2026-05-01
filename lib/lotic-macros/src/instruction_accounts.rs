@@ -196,7 +196,7 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                                 ::lotic::pinocchio_system::instructions::CreateAccount{
                                     from: self.#payer_ident,
                                     to: &self.#field_ident,
-                                    lamports: ::lotic::pinocchio::sysvars::rent::Rent::get()?.try_minimum_balance(#space_value)?,
+                                    lamports: <::lotic::pinocchio::sysvars::rent::Rent as lotic::pinocchio::sysvars::Sysvar>::get()?.try_minimum_balance(#space_value)?,
                                     space: #space_value as u64,
                                     owner: &__PROGRAM_ID__,
                                 }.invoke()?;

@@ -3969,6 +3969,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "test-processor-init"
+version = "0.0.0"
+dependencies = [
+ "lotic",
+ "mollusk-svm",
+ "solana-sdk",
+]
+
+[[package]]
 name = "thiserror"
 version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"

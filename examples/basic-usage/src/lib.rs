@@ -1,6 +1,6 @@
 use lotic::{
     account_state, declare_program, instruction,
-    pinocchio::{sysvars::Sysvar, AccountView, ProgramResult},
+    pinocchio::{AccountView, ProgramResult},
     Account, Context, InstructionAccounts,
 };
 
